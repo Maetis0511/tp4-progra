@@ -3,17 +3,21 @@
 import {z} from "zod";
 import {useForm, zodResolver} from "@mantine/form";
 import {PasswordInput, TextInput} from "@mantine/core";
-import {Button} from "tp-kit/components";
+import {Button, NoticeMessage, useZodI18n} from "tp-kit/components";
 import {useRouter} from "next/navigation";
+import React, {useState} from "react";
 
 const schema = z.object({
-    nom: z.string(),
-    email: z.string().email({ message: 'Email invalide' }),
-    password: z.string().min(6)
+    nom: z.string().nonempty(),
+    email: z.string().email().nonempty(),
+    password: z.string().min(6),
 });
 
+type FormValues = z.infer<typeof schema>;
+
 export default function Inscription(){
-    const form = useForm({
+    useZodI18n(z);
+    const form = useForm<FormValues>({
         initialValues: {
             nom: '',
             email: '',
@@ -25,16 +29,28 @@ export default function Inscription(){
 
     const router = useRouter();
 
+    const [created, setCreated] = useState(false);
+    const [isValid, setIsValid] = useState(false);
+    const [message, setMessage] = useState("");
+
     return (
         <form
             className="flex items-center flex-col space-y-6 w-"
             onSubmit={form.onSubmit((values) => console.log(values))}
         >
             <p
-                className="text-left w-full"
+                className="text-left w-full text-2xl"
             >
                 Inscription
             </p>
+
+            {
+                created &&
+                <NoticeMessage
+                    type={isValid ? "success" : "error"}
+                    message={message}
+                />
+            }
 
             <TextInput
                 className="w-full"

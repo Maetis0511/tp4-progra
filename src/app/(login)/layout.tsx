@@ -1,4 +1,4 @@
-import {Card} from "tp-kit/components";
+import {Card, ZodI18nProvider} from "tp-kit/components";
 import {PropsWithChildren} from "react";
 
 export default function Layout({children}: PropsWithChildren){
@@ -10,7 +10,9 @@ export default function Layout({children}: PropsWithChildren){
             <Card
                 className="w-1/4"
             >
-                {children}
+                <ZodI18nProvider>
+                    {children}
+                </ZodI18nProvider>
             </Card>
         </div>
     )

@@ -3,17 +3,20 @@
 import { z } from 'zod';
 import {useForm, zodResolver} from "@mantine/form";
 import {PasswordInput, TextInput} from "@mantine/core";
-import React from "react";
-import {Button} from "tp-kit/components";
+import React, {useState} from "react";
+import {Button, NoticeMessage, useZodI18n} from "tp-kit/components";
 import {useRouter} from "next/navigation";
 
 const schema = z.object({
-    email: z.string().email({ message: 'Invalid email' }),
+    email: z.string().email().nonempty(),
     password: z.string().min(6)
 });
 
+type FormValues = z.infer<typeof schema>;
+
 export default function Connexion(){
-    const form = useForm({
+    useZodI18n(z);
+    const form = useForm<FormValues>({
         initialValues: {
             email: '',
             password: '',
@@ -21,6 +24,10 @@ export default function Connexion(){
 
         validate: zodResolver(schema),
     });
+
+    const [created, setCreated] = useState(false);
+    const [isValid, setIsValid] = useState(false);
+    const [message, setMessage] = useState("");
 
     const router = useRouter();
 
@@ -30,10 +37,18 @@ export default function Connexion(){
             onSubmit={form.onSubmit((values) => console.log(values))}
         >
             <p
-                className="text-left w-full"
+                className="text-left w-full text-2xl"
             >
                 Connexion
             </p>
+
+            {
+                created &&
+                <NoticeMessage
+                    type={isValid ? "success" : "error"}
+                    message={message}
+                />
+            }
 
             <TextInput
                 className="w-full"
