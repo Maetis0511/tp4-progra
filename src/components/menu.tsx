@@ -1,21 +1,34 @@
 "use client";
 
-import { FC, memo, Fragment } from "react";
+import {FC, memo, Fragment, useEffect} from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { MenuBar, Button } from "tp-kit/components";
 import { ShoppingBag, X, User } from "@phosphor-icons/react";
 import { Cart } from "./cart";
 import { CartCounter } from "./cart-counter";
 import Link from "next/link";
+import {getUser} from "../utils/supabase";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {useState} from "react";
 
 type Props = {};
 
 const Menu: FC<Props> = memo(function () {
+    const supabase = createClientComponentClient();
+    const [isSession, setIsSession] = useState(false);
+
+    useEffect(() => {
+        getUser(supabase).then((user) => {
+            console.log(user)
+            setIsSession(!!(user))
+        })
+    }, []);
+
   return (
     <MenuBar
     trailing={
         <div className="flex flex-row items-center gap-4 justify-end">
-          <Link href="/mon-compte">
+          <Link href={isSession ? "/mon-compte" : "/connexion"}>
             <Button variant="ghost" className="!rounded-full !p-0 h-[44px] w-[44px] flex justify-center items-center aspect-square relative text-3xl">
               <User size="18" weight="bold" />
             </Button>

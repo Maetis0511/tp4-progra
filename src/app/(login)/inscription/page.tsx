@@ -37,7 +37,6 @@ export default function Inscription(){
     const [message, setMessage] = useState("");
 
     const handleSubmit = async (values: FormValues) => {
-        console.log(values);
         const { error } = await supabase.auth.signUp(
             {
                 email: values.email,
