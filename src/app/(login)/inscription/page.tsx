@@ -6,9 +6,10 @@ import {PasswordInput, TextInput} from "@mantine/core";
 import {Button, NoticeMessage, useZodI18n} from "tp-kit/components";
 import {useRouter} from "next/navigation";
 import React, {useState} from "react";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 const schema = z.object({
-    nom: z.string().nonempty(),
+    name: z.string().nonempty(),
     email: z.string().email().nonempty(),
     password: z.string().min(6),
 });
@@ -19,7 +20,7 @@ export default function Inscription(){
     useZodI18n(z);
     const form = useForm<FormValues>({
         initialValues: {
-            nom: '',
+            name: '',
             email: '',
             password: '',
         },
@@ -27,16 +28,39 @@ export default function Inscription(){
         validate: zodResolver(schema),
     });
 
+    const supabase = createClientComponentClient();
+
     const router = useRouter();
 
     const [created, setCreated] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const [message, setMessage] = useState("");
 
+    const handleSubmit = async (values: FormValues) => {
+        console.log(values);
+        const { error } = await supabase.auth.signUp(
+            {
+                email: values.email,
+                password: values.password,
+                options: {
+                    emailRedirectTo: 'http://localhost:3000/api/auth/callback',
+                    data: {
+                        name: values.name
+                    }
+                }
+            }
+        )
+
+        console.log(error)
+        setCreated(true);
+        setMessage((error) ? error.message : "Votre inscription a bien été prise en compte. Validez votre adresse email pour vous connecter")
+        setIsValid((!error))
+    }
+
     return (
         <form
             className="flex items-center flex-col space-y-6 w-"
-            onSubmit={form.onSubmit((values) => console.log(values))}
+            onSubmit={form.onSubmit((values) => handleSubmit(values))}
         >
             <p
                 className="text-left w-full text-2xl"
@@ -47,6 +71,7 @@ export default function Inscription(){
             {
                 created &&
                 <NoticeMessage
+                    className="w-full"
                     type={isValid ? "success" : "error"}
                     message={message}
                 />
@@ -57,7 +82,7 @@ export default function Inscription(){
                 required
                 label="Nom"
                 description="Le nom qui sera utilisé pour vos commandes"
-                {...form.getInputProps('nom')}
+                {...form.getInputProps('name')}
             />
 
             <TextInput
