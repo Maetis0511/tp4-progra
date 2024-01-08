@@ -19,7 +19,6 @@ const Menu: FC<Props> = memo(function () {
 
     useEffect(() => {
         getUser(supabase).then((user) => {
-            console.log(user.session)
             setIsSession(!!(user.session))
         })
     }, []);
