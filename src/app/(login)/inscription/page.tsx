@@ -5,8 +5,9 @@ import {useForm, zodResolver} from "@mantine/form";
 import {PasswordInput, TextInput} from "@mantine/core";
 import {Button, NoticeMessage, useZodI18n} from "tp-kit/components";
 import {useRouter} from "next/navigation";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {getUser} from "../../../utils/supabase";
 
 const schema = z.object({
     name: z.string().nonempty(),
@@ -27,6 +28,14 @@ export default function Inscription(){
 
         validate: zodResolver(schema),
     });
+
+    useEffect(() => {
+        getUser(supabase).then((user) => {
+            if (user.session) {
+                router.push('/mon-compte')
+            }
+        });
+    }, []);
 
     const supabase = createClientComponentClient();
 
