@@ -12,16 +12,20 @@ export default async function Layout({ children }: { children: ReactNode }) {
     >
 
       <div
-        className="basis-2/5 bg-coffee-50"
+        className="basis-2/6 bg-coffee-50 py-8 lg:px-8"
       >
-        <Card
-          className="w-full py-24"
+        <div
+            className="py-24 min-h-[80vh]"
         >
-          {children}
-        </Card>
+          <Card
+              className="w-full py-4"
+          >
+            {children}
+          </Card>
+        </div>
       </div>
       {/* Orders list */}
-      <SectionContainer wrapperClassName="py-24 min-h-[80vh]" className="basis-3/5">
+      <SectionContainer wrapperClassName="py-24 min-h-[80vh]" className="basis-4/6">
         <div className="bg-white rounded-lg p-6 shadow-lg">
           <OrderTable orders={orders} />
         </div>
