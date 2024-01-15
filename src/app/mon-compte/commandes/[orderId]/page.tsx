@@ -20,20 +20,6 @@ export default async function OrderDetailsPage({params}: NextPageProps<Props>) {
     }
   });
 
-  const supabase = createClientComponentClient();
-
-  const channel = supabase
-      .channel('update-order')
-      .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-          },
-          (payload) => console.log(payload)
-      )
-      .subscribe()
-
   if (!order) notFound();
 
   return (
